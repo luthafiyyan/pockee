@@ -174,26 +174,33 @@ function loadRecentTransactions() {
 
 function loadAllTransactions() {
     const container = document.getElementById('transactionsList');
-    if (!container) return;
+    if (!container) {
+        console.error("Element with ID 'transactionsList' not found.");
+        return;
+    }
+
+    console.log("--- Running loadAllTransactions ---");
+    console.log("Initial transactions array:", JSON.parse(JSON.stringify(transactions)));
 
     let filteredTransactions = [...transactions].sort((a, b) => new Date(b.date) - new Date(a.date));
 
     const typeFilter = document.getElementById('filterType')?.value || '';
     const categoryFilter = document.getElementById('filterCategory')?.value || '';
-    
     const searchInput = document.getElementById('searchInput');
     const searchQuery = searchInput ? searchInput.value.toLowerCase() : '';
 
-    if (typeFilter) {
-        filteredTransactions = filteredTransactions.filter(t => t.type === typeFilter);
-    }
-    if (categoryFilter) {
-        filteredTransactions = filteredTransactions.filter(t => t.category === categoryFilter);
-    }
-    if (searchQuery) {
-        // Also check if description exists to be safe
-        filteredTransactions = filteredTransactions.filter(t => t.description && t.description.toLowerCase().includes(searchQuery));
-    }
+    console.log("Filter values:", { typeFilter, categoryFilter, searchQuery });
+
+    const initialCount = filteredTransactions.length;
+
+    filteredTransactions = filteredTransactions.filter(t => {
+        const typeMatch = typeFilter ? t.type === typeFilter : true;
+        const categoryMatch = categoryFilter ? t.category === categoryFilter : true;
+        const searchMatch = searchQuery ? (t.description && t.description.toLowerCase().includes(searchQuery)) : true;
+        return typeMatch && categoryMatch && searchMatch;
+    });
+
+    console.log(`Filtering complete. Before: ${initialCount}, After: ${filteredTransactions.length}`);
 
     if (filteredTransactions.length === 0) {
         container.innerHTML = `<div class="text-center text-glass-light py-8">
@@ -201,11 +208,13 @@ function loadAllTransactions() {
             <p>${transactions.length === 0 ? 'Belum ada transaksi' : 'Tidak ada transaksi yang sesuai filter'}</p>
             ${transactions.length === 0 ? '<p class="text-sm mt-2">Klik "Tambah Transaksi" untuk memulai</p>' : ''}
         </div>`;
+        console.log("Rendered 'No transactions' message.");
         return;
     }
 
     const categoryEmojis = getCategoryEmojis();
     container.innerHTML = filteredTransactions.map(transaction => createTransactionHTML(transaction, categoryEmojis, true)).join('');
+    console.log("Rendered transaction list.");
 }
 
 function createTransactionHTML(transaction, emojis, showDelete = false) {
@@ -253,6 +262,4 @@ function getCategoryEmojis() {
     };
 }
 
-function filterTransactions() {
-    displayTransactions();
-}
+
