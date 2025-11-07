@@ -103,7 +103,7 @@ async function saveUserTransactions() {
             email: currentUser.email,
             displayName: currentUser.displayName || '',
             photoURL: currentUser.photoURL || '',
-            transactions: transactions.map(t => encryptTransaction(t, currentUser.uid)),
+            transactions: transactions, // Save plain transactions
             lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
             totalTransactions: transactions.length
         }, { merge: true });
@@ -123,8 +123,7 @@ async function loadUserTransactions() {
         
         if (userDoc.exists) {
             const userData = userDoc.data();
-            const encryptedTransactions = userData.transactions || [];
-            transactions = encryptedTransactions.map(t => decryptTransaction(t, currentUser.uid));
+            transactions = userData.transactions || [];
             console.log('✅ Berhasil memuat', transactions.length, 'transaksi');
         } else {
             transactions = [];
