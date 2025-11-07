@@ -178,42 +178,24 @@ function loadAllTransactions() {
         return;
     }
 
-    console.log("--- Running loadAllTransactions ---");
-    console.log("Initial transactions array:", JSON.parse(JSON.stringify(transactions)));
+    console.log("--- Running loadAllTransactions (DEBUG MODE - NO FILTERING) ---");
+    console.log("Transactions array to be rendered:", JSON.parse(JSON.stringify(transactions)));
 
     let filteredTransactions = [...transactions].sort((a, b) => new Date(b.date) - new Date(a.date));
 
-    const typeFilter = document.getElementById('filterType')?.value || '';
-    const categoryFilter = document.getElementById('filterCategory')?.value || '';
-    const searchInput = document.getElementById('searchInput');
-    const searchQuery = searchInput ? searchInput.value.toLowerCase() : '';
-
-    console.log("Filter values:", { typeFilter, categoryFilter, searchQuery });
-
-    const initialCount = filteredTransactions.length;
-
-    filteredTransactions = filteredTransactions.filter(t => {
-        const typeMatch = typeFilter ? t.type === typeFilter : true;
-        const categoryMatch = categoryFilter ? t.category === categoryFilter : true;
-        const searchMatch = searchQuery ? (t.description && t.description.toLowerCase().includes(searchQuery)) : true;
-        return typeMatch && categoryMatch && searchMatch;
-    });
-
-    console.log(`Filtering complete. Before: ${initialCount}, After: ${filteredTransactions.length}`);
-
     if (filteredTransactions.length === 0) {
         container.innerHTML = `<div class="text-center text-glass-light py-8">
-            <i class="fas fa-search text-4xl mb-4 opacity-50"></i>
-            <p>${transactions.length === 0 ? 'Belum ada transaksi' : 'Tidak ada transaksi yang sesuai filter'}</p>
-            ${transactions.length === 0 ? '<p class="text-sm mt-2">Klik "Tambah Transaksi" untuk memulai</p>' : ''}
+            <i class="fas fa-receipt text-4xl mb-4 opacity-50"></i>
+            <p>Belum ada transaksi</p>
+            <p class="text-sm mt-2">Klik "Tambah Transaksi" untuk memulai</p>
         </div>`;
-        console.log("Rendered 'No transactions' message.");
+        console.log("Rendered 'No transactions' message because array is empty.");
         return;
     }
 
     const categoryEmojis = getCategoryEmojis();
     container.innerHTML = filteredTransactions.map(transaction => createTransactionHTML(transaction, categoryEmojis, true)).join('');
-    console.log("Rendered transaction list.");
+    console.log(`Rendered ${filteredTransactions.length} transaction(s).`);
 }
 
 function createTransactionHTML(transaction, emojis, showDelete = false) {
