@@ -28,6 +28,7 @@ function setupEventListeners() {
     // Filters
     document.getElementById('filterType').addEventListener('change', filterTransactions);
     document.getElementById('filterCategory').addEventListener('change', filterTransactions);
+    document.getElementById('searchInput').addEventListener('keyup', filterTransactions);
     
     // Transaction form
     document.getElementById('transactionForm').addEventListener('submit', handleAddTransaction);
@@ -36,7 +37,7 @@ function setupEventListeners() {
     document.getElementById('sidebar').addEventListener('click', function(event) {
         const navItem = event.target.closest('.nav-item');
         if (navItem) {
-            const section = navItem.getAttribute('onclick').match(/'([^']+)'/)[1];
+            const section = navItem.getAttribute('onclick').match(/\'([^']+)\'/)[1];
             showSection(section);
         }
     });

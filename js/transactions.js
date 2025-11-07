@@ -180,9 +180,17 @@ function loadAllTransactions() {
 
     const typeFilter = document.getElementById('filterType')?.value || '';
     const categoryFilter = document.getElementById('filterCategory')?.value || '';
+    const searchQuery = document.getElementById('searchInput')?.value.toLowerCase() || '';
 
-    if (typeFilter) filteredTransactions = filteredTransactions.filter(t => t.type === typeFilter);
-    if (categoryFilter) filteredTransactions = filteredTransactions.filter(t => t.category === categoryFilter);
+    if (typeFilter) {
+        filteredTransactions = filteredTransactions.filter(t => t.type === typeFilter);
+    }
+    if (categoryFilter) {
+        filteredTransactions = filteredTransactions.filter(t => t.category === categoryFilter);
+    }
+    if (searchQuery) {
+        filteredTransactions = filteredTransactions.filter(t => t.description.toLowerCase().includes(searchQuery));
+    }
 
     if (filteredTransactions.length === 0) {
         container.innerHTML = `<div class="text-center text-glass-light py-8">
