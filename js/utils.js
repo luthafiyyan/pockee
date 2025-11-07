@@ -44,6 +44,11 @@ function decryptTransactionData(encryptedData, userId) {
 
 // Encrypt individual transaction
 function encryptTransaction(transaction, userId) {
+    // If it's already encrypted, just return it.
+    if (transaction.encryptedData) {
+        return transaction;
+    }
+
     const sensitiveData = {
         amount: transaction.amount,
         description: transaction.description,
@@ -60,15 +65,21 @@ function encryptTransaction(transaction, userId) {
 }
 
 // Decrypt individual transaction
-function decryptTransaction(encryptedTransaction, userId) {
+function decryptTransaction(transaction, userId) {
+    // If the transaction does not have encryptedData, it's likely a plain text object
+    if (!transaction.encryptedData) {
+        console.warn('⚠️ Transaksi tidak terenkripsi, mengembalikan apa adanya:', transaction);
+        return transaction;
+    }
+
     try {
-        const decryptedData = decryptTransactionData(encryptedTransaction.encryptedData, userId);
+        const decryptedData = decryptTransactionData(transaction.encryptedData, userId);
         
         return {
-            id: encryptedTransaction.id,
-            type: encryptedTransaction.type,
-            date: encryptedTransaction.date,
-            createdAt: encryptedTransaction.createdAt,
+            id: transaction.id,
+            type: transaction.type,
+            date: transaction.date,
+            createdAt: transaction.createdAt,
             amount: decryptedData.amount,
             description: decryptedData.description,
             category: decryptedData.category
@@ -77,10 +88,10 @@ function decryptTransaction(encryptedTransaction, userId) {
         console.error('❌ Error mendekripsi transaksi:', error);
         // Return a placeholder for corrupted data
         return {
-            id: encryptedTransaction.id,
+            id: transaction.id,
             type: 'expense',
-            date: encryptedTransaction.date || new Date().toISOString().split('T')[0],
-            createdAt: encryptedTransaction.createdAt || new Date().toISOString(),
+            date: transaction.date || new Date().toISOString().split('T')[0],
+            createdAt: transaction.createdAt || new Date().toISOString(),
             amount: 0,
             description: '[Data Terenkripsi - Tidak Dapat Dibaca]',
             category: 'lainnya'
