@@ -180,7 +180,9 @@ function loadAllTransactions() {
 
     const typeFilter = document.getElementById('filterType')?.value || '';
     const categoryFilter = document.getElementById('filterCategory')?.value || '';
-    const searchQuery = document.getElementById('searchInput')?.value.toLowerCase() || '';
+    
+    const searchInput = document.getElementById('searchInput');
+    const searchQuery = searchInput ? searchInput.value.toLowerCase() : '';
 
     if (typeFilter) {
         filteredTransactions = filteredTransactions.filter(t => t.type === typeFilter);
@@ -189,7 +191,8 @@ function loadAllTransactions() {
         filteredTransactions = filteredTransactions.filter(t => t.category === categoryFilter);
     }
     if (searchQuery) {
-        filteredTransactions = filteredTransactions.filter(t => t.description.toLowerCase().includes(searchQuery));
+        // Also check if description exists to be safe
+        filteredTransactions = filteredTransactions.filter(t => t.description && t.description.toLowerCase().includes(searchQuery));
     }
 
     if (filteredTransactions.length === 0) {
